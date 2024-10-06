@@ -17,12 +17,14 @@ class _HomePageState extends State<HomePage> {
 
   void deleteContact(String id) async {
     await MyFirebase.contactsCollection.doc(id).delete();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Contact deleted'),
-        backgroundColor: Colors.red[300],
-      ),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Contact deleted'),
+          backgroundColor: Colors.red[300],
+        ),
+      );
+    }
   }
 
   @override
@@ -40,7 +42,7 @@ class _HomePageState extends State<HomePage> {
                 return Center(
                   child: Text(
                     "No Contact Yet!",
-                    style: Theme.of(context).textTheme.headline6,
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
                 );
               }

@@ -46,15 +46,24 @@ class _EditContactPageState extends State<EditContactPage> {
   }
 
   void editContact() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        await MyFirebase.contactsCollection.doc(widget.id).update({
-          'name': nameController.text.trim(),
-          'phone': phoneController.text.trim(),
-          'email': emailController.text.trim(),
-        });
+  // التحقق من صحة النموذج
+  if (_formKey.currentState!.validate()) {
+    try {
+      // تحديث بيانات الاتصال في قاعدة البيانات
+      await MyFirebase.contactsCollection.doc(widget.id).update({
+        'name': nameController.text.trim(),
+        'phone': phoneController.text.trim(),
+        'email': emailController.text.trim(),
+      });
+
+      // التحقق من أن الـ widget لا يزال موجودًا قبل استخدام BuildContext
+      if (mounted) {
         Navigator.pop(context);
-      } on FirebaseException {
+      }
+    } on FirebaseException {
+      // التحقق من أن الـ widget لا يزال موجودًا قبل استخدام BuildContext
+      if (mounted) {
+        // عرض رسالة خطأ في حال فشل التحديث
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Failed to edit contact'),
@@ -62,16 +71,18 @@ class _EditContactPageState extends State<EditContactPage> {
           ),
         );
       }
-    } else {
-      // show snackbar
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Please fill all the fields'),
-          backgroundColor: Colors.red[300],
-        ),
-      );
     }
+  } else {
+    // عرض رسالة خطأ في حال عدم ملء جميع الحقول
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Please fill all the fields'),
+        backgroundColor: Colors.red[300],
+      ),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

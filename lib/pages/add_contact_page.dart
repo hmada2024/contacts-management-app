@@ -1,6 +1,7 @@
 import 'package:firebase_cli/theme/theme.dart';
 import 'package:firebase_cli/utils/my_firebase.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 
@@ -25,7 +26,7 @@ class _AddContactPageState extends State<AddContactPage> {
     emailController.dispose();
   }
 
-  // TODO: Add contact to Firebase
+  
   void addContact() async {
     if (_formKey.currentState!.validate()) {
       try {
@@ -34,17 +35,23 @@ class _AddContactPageState extends State<AddContactPage> {
           'phone': phoneController.text.trim(),
           'email': emailController.text.trim(),
         });
-        Navigator.pop(context);
-      } on FirebaseException {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Failed to add contact'),
-            backgroundColor: Colors.red[300],
-          ),
-        );
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      } on FirebaseException catch (e) {
+        if (kDebugMode) {
+          print('FirebaseException: $e');
+        }
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Failed to add contact'),
+              backgroundColor: Colors.red[300],
+            ),
+          );
+        }
       }
     } else {
-      // show snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Please fill all the fields'),
